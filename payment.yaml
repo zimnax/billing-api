@@ -1,0 +1,293 @@
+swagger: '2.0'
+info:
+  description: Api Documentation
+  version: '1.0'
+  title: Api Documentation
+  termsOfService: 'urn:tos'
+  contact: {}
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0'
+host: 'localhost:8080'
+basePath: /api/billing/wallet
+tags:
+  - name: payment-controller
+    description: Payment Controller
+paths:
+  '/register':
+    post:
+      tags:
+        - payment-controller
+      summary: Register a new wallet.
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: RegisterWalletRequest
+          description: The wallet params to create.
+          schema:
+            $ref: "#/definitions/RegisterWalletRequest"
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: "#/definitions/WalletResponce"
+        '203':
+          description: Bad json
+        '500':
+          description: permission restrictions
+          schema:
+            $ref: "#/definitions/ErrorResponce"
+  '/deposit':
+    post:
+      tags:
+        - payment-controller
+      summary: Deposit wallet
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: DepositWalletRequest
+          description: The wallet params to deposit.
+          schema:
+            $ref: "#/definitions/DepositRequest"
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: "#/definitions/WalletResponce"
+        '203':
+          description: Bad json
+  '/balance':
+    get:
+      tags:
+        - payment-controller
+      summary: get wallet
+      produces:
+        - '*/*'
+      parameters:
+        - name: company_id
+          in: query
+          description: company_id
+          type: string
+        - name: page
+          in: query
+          description: page
+          required: false
+          type: integer
+        - name: size
+          in: query
+          description: size
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: "#/definitions/WalletResponce"
+        '500':
+          description: permission restrictions
+          schema:
+            $ref: "#/definitions/ErrorResponce"
+  '/transfer':
+    post:
+      tags:
+        - payment-controller
+      summary: transfer money
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: RegisterWalletRequest
+          description: The wallet params to create.
+          schema:
+            $ref: "#/definitions/TransferRequest"
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: "#/definitions/TransferResponce"
+        '203':
+          description: Bad json
+        '500':
+          description: internal error
+          schema:
+            $ref: "#/definitions/ErrorResponce"
+  '/withdrawal':
+    post:
+      tags:
+        - payment-controller
+      summary: withdrawal money
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: RegisterWalletRequest
+          description: The wallet params to create.
+          schema:
+            $ref: "#/definitions/WithdrawalRequest"
+      responses:
+        '200':
+          description: OK
+        '203':
+          description: Bad json
+        '500':
+          description: internal error
+          schema:
+            $ref: "#/definitions/ErrorResponce"
+  '/transactions':
+    get:
+      tags:
+        - payment-controller
+      summary: getTransactions
+      operationId: getTransactionsUsingGET
+      produces:
+        - '*/*'
+      parameters:
+        - name: company_id
+          in: query
+          description: company_id
+          required: false
+          type: string
+        - name: date_from
+          in: query
+          description: DateFrom
+          required: false
+          type: string
+        - name: date_to
+          in: query
+          description: DateTo
+          required: false
+          type: string
+        - name: page
+          in: query
+          description: page
+          required: false
+          type: integer
+        - name: size
+          in: query
+          description: size
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/TransactionsResponce'
+        '203':
+          description: Bad json
+        '500':
+          description: internal error
+          schema:
+            $ref: "#/definitions/ErrorResponce"
+
+definitions:
+
+  RegisterWalletRequest:
+    type: object
+    required:
+      - CompanyId
+    properties:
+      CompanyId:
+        type: string
+
+  WalletResponce:
+    type: array
+    items:
+      properties:
+        Id:
+          type: integer
+        CompanyId:
+          type: string
+        Balance:
+          type: string
+
+  DepositRequest:
+    type: object
+    required:
+      - Number
+      - Type
+      - ExpireMonth
+      - ExpireYear
+      - CVV2
+      - FirstName
+      - LastName
+      - Currency
+      - Total
+      - UserId
+      - WalletId
+    properties:
+      Number:
+        type: string
+      Type:
+        type: string
+      ExpireMonth:
+        type: string
+      ExpireYear:
+        type: string
+      CVV2:
+        type: string
+      FirstName:
+        type: string
+      LastName:
+        type: string
+      Total:
+        type: string
+
+  TransferRequest:
+    type: object
+    required:
+      - WalletIdFrom
+      - WalletIdTo
+      - Amount
+    properties:
+      WalletIdFrom:
+        type: string
+      WalletIdTo:
+        type: string
+      Amount:
+        type: integer
+
+  TransferResponce:
+    type: object
+    properties:
+      Id:
+        type: string
+      CompanyId:
+        type: string
+      Balance:
+        type: string
+
+  WithdrawalRequest:
+    required:
+      - PayPal_email
+      - Amount
+    properties:
+      PayPal_email:
+        type: string
+      Amount:
+        type: integer
+
+  TransactionsResponce:
+    type: array
+    items:
+     properties:
+      Id:
+        type: string
+      UserId:
+        type: string
+      CompanyId:
+        type: string
+      Type:
+        type: string
+      Amount:
+        type: integer
+      Date:
+        type: integer
+
+  ErrorResponce:
+    required:
+      - Error
+    properties:
+      Error:
+        type: string

@@ -4,7 +4,7 @@
 Billing API - is a small project, transaction core for user wallets. 
 The main purpose - manage users balance inside the system and inside PayPal system.
 
-**payment.yaml** - SWAGGER file
+payment.yaml - SWAGGER file
 
 Libs:
 

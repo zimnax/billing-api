@@ -1,0 +1,33 @@
+version: "3"
+services:
+  app:
+    build: .
+    volumes:
+      - ./app:/go/src/app
+    environment:
+      REDIS_SERVICE_HOST: redis
+      DATABASE_SERVICE_HOST: db
+      DATABASE_SERVICE_DB: b_api
+      DATABASE_SERVICE_USER: b_api
+      DATABASE_SERVICE_PASSWORD: wEfNbjayEbxuv7oaUbM7kosU
+      GOOGLE_APPLICATION_CREDENTIALS: /var/secrets/google/internal.json
+      PAYPAL_CLIENT_ID: ATCJzBDPr_ADOxx8cEHJPPLopC-vbIbBABULE4DGWF54F0_vAuYf2Wo0tJ2pakoUaXRhRANSl8w0eXkf
+      PAYPAL_API_SECRET: EP00I2qWcrnLEhUOl6W9O-mizhZ_QYhmypAyVR_-fMJgWiGekKTyp-OoJ-Sp_nwc2WobSnObwkHLHYF5
+    ports:
+      - 8000:8000
+    links:
+      - db
+      - redis
+  db:
+    image: postgres:10.1-alpine
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: b_api
+      POSTGRES_USER: b_api
+      POSTGRES_PASSWORD: wEfNbjayEbxuv7oaUbM7kosU
+    ports:
+      - "5432:5432"
+    volumes:
+      - /var/lib/postgresql/data/pgdata
+  redis:
+    image: redis:4.0.6-alpine
